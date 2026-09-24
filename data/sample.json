@@ -1,0 +1,9 @@
+{
+  "event_id": "092507-007-sample-001",
+  "event_type": "PRODUCT_REGISTERED",
+  "aggregate_type": "product_version",
+  "aggregate_id": "frozen_bread_clock-001",
+  "occurred_at": "2026-09-24T12:00:00+08:00",
+  "version": 1,
+  "payload": {}
+}

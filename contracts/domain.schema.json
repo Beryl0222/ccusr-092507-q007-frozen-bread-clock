@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "冷冻面包食用时钟领域事件",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "aggregate_type",
+    "aggregate_id",
+    "occurred_at",
+    "version",
+    "payload"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "PRODUCT_REGISTERED",
+        "PORTION_CREATED",
+        "STORAGE_RECORDED",
+        "THAW_STARTED",
+        "NOTICE_RECEIVED"
+      ]
+    },
+    "aggregate_type": {
+      "type": "string",
+      "enum": [
+        "product_version",
+        "household_portion",
+        "storage_timeline",
+        "safety_notice"
+      ]
+    },
+    "aggregate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "payload_required_by_event": {
+    "PORTION_CREATED": [
+      "parent_ref",
+      "quantity"
+    ],
+    "STORAGE_RECORDED": [
+      "method",
+      "occurred_at"
+    ],
+    "NOTICE_RECEIVED": [
+      "lot_no",
+      "notice_version"
+    ]
+  },
+  "additionalProperties": false
+}

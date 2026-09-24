@@ -1,0 +1,8 @@
+[project]
+name = "frozen-bread-clock"
+version = "0.1.0"
+description = "冷冻面包食用时钟领域契约"
+requires-python = ">=3.11"
+
+[tool.unittest]
+start-directory = "tests"
