@@ -21,8 +21,10 @@
       "enum": [
         "PRODUCT_REGISTERED",
         "PORTION_CREATED",
+        "PACKAGE_OPENED",
         "STORAGE_RECORDED",
         "THAW_STARTED",
+        "PORTION_CONSUMED",
         "NOTICE_RECEIVED"
       ]
     },
@@ -52,6 +54,13 @@
     }
   },
   "payload_required_by_event": {
+    "PRODUCT_REGISTERED": [
+      "product_id",
+      "recipe_version",
+      "lot_no",
+      "produced_at",
+      "rules"
+    ],
     "PORTION_CREATED": [
       "parent_ref",
       "quantity"
@@ -60,9 +69,13 @@
       "method",
       "occurred_at"
     ],
+    "PORTION_CONSUMED": [
+      "quantity"
+    ],
     "NOTICE_RECEIVED": [
       "lot_no",
-      "notice_version"
+      "notice_version",
+      "kind"
     ]
   },
   "additionalProperties": false
