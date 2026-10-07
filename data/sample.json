@@ -2,8 +2,13 @@
   "event_id": "092507-007-sample-001",
   "event_type": "PRODUCT_REGISTERED",
   "aggregate_type": "product_version",
-  "aggregate_id": "frozen_bread_clock-001",
-  "occurred_at": "2026-09-24T12:00:00+08:00",
+  "aggregate_id": "milk-loaf-v2",
+  "occurred_at": "2026-09-20T09:00:00+08:00",
   "version": 1,
-  "payload": {}
+  "payload": {
+    "product_sku": "milk-loaf",
+    "version_no": 2,
+    "allergen_text": "含小麦、乳制品、大豆；同一生产线也加工蛋类",
+    "applicable_lot_from": "2026-09-20T00:00:00+08:00"
+  }
 }

@@ -1,4 +1,8 @@
-"""领域事件交换契约校验。"""
+"""领域事件交换契约校验。
+
+校验层只负责稳定报告结构、枚举、时间、版本和必需载荷问题；
+同一事件标识的幂等与冲突处理属于上层业务服务职责，校验层不替调用方改写输入。
+"""
 
 from __future__ import annotations
 
@@ -56,9 +60,26 @@ def validate_event(payload: Any, schema: Mapping[str, Any]) -> list[ContractIssu
     if "payload" in payload and not isinstance(event_payload, Mapping):
         issues.append(ContractIssue("payload", "object_required", "事件载荷必须是 JSON 对象"))
     elif isinstance(event_type, str) and isinstance(event_payload, Mapping):
-        required = schema.get("payload_required_by_event", {}).get(event_type, [])
+        required = list(schema.get("payload_required_by_event", {}).get(event_type, []))
+        kind = event_payload.get("kind")
+        if isinstance(kind, str):
+            required.extend(schema.get("payload_required_by_notice_kind", {}).get(kind, []))
         for field in required:
-            if field not in event_payload:
+            if field not in event_payload or event_payload[field] in (None, ""):
                 issues.append(ContractIssue(f"payload.{field}", "required", "事件载荷缺少必填字段"))
+
+        for field, allowed in schema.get("payload_enums", {}).items():
+            value = event_payload.get(field)
+            if isinstance(value, str) and value not in allowed:
+                issues.append(
+                    ContractIssue(f"payload.{field}", "unsupported_value", "载荷字段值未在契约中登记")
+                )
+
+        for field in ("occurred_at", "received_at", "issued_at", "produced_at"):
+            value = event_payload.get(field)
+            if value is not None and (not isinstance(value, str) or not _timezone_is_explicit(value)):
+                issues.append(
+                    ContractIssue(f"payload.{field}", "timezone_required", "业务发生时间必须包含时区")
+                )
 
     return sorted(issues, key=lambda issue: (issue.field, issue.code))

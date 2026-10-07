@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "冷冻面包食用时钟领域事件",
+  "title": "离线可重放的冷冻面包食用时钟领域事件",
   "type": "object",
   "required": [
     "event_id",
@@ -19,10 +19,14 @@
     "event_type": {
       "type": "string",
       "enum": [
+        "RULES_PUBLISHED",
         "PRODUCT_REGISTERED",
-        "PORTION_CREATED",
+        "ORDER_PLACED",
+        "PORTION_SPLIT",
+        "OPENING_RECORDED",
         "STORAGE_RECORDED",
         "THAW_STARTED",
+        "CONSUMPTION_RECORDED",
         "NOTICE_RECEIVED"
       ]
     },
@@ -30,6 +34,7 @@
       "type": "string",
       "enum": [
         "product_version",
+        "rules_catalog",
         "household_portion",
         "storage_timeline",
         "safety_notice"
@@ -41,28 +46,94 @@
     },
     "occurred_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "事件登记时间（客户端上传时间），必须携带时区；业务发生时间以 payload.occurred_at 为准，支持离线补录。"
     },
     "version": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "description": "事件在其聚合内的版本号，从 1 开始连续递增。"
     },
     "payload": {
       "type": "object"
     }
   },
   "payload_required_by_event": {
-    "PORTION_CREATED": [
+    "RULES_PUBLISHED": [
+      "product_sku",
+      "rules_version",
+      "rules"
+    ],
+    "PRODUCT_REGISTERED": [
+      "product_sku",
+      "version_no",
+      "allergen_text",
+      "applicable_lot_from"
+    ],
+    "ORDER_PLACED": [
+      "order_no",
+      "product_sku",
+      "version_no",
+      "lot_no",
+      "received_at"
+    ],
+    "PORTION_SPLIT": [
       "parent_ref",
-      "quantity"
+      "quantity",
+      "unit",
+      "occurred_at"
+    ],
+    "OPENING_RECORDED": [
+      "portion_id",
+      "occurred_at"
     ],
     "STORAGE_RECORDED": [
+      "portion_id",
       "method",
       "occurred_at"
     ],
+    "THAW_STARTED": [
+      "portion_id",
+      "via",
+      "occurred_at"
+    ],
+    "CONSUMPTION_RECORDED": [
+      "portion_id",
+      "quantity",
+      "occurred_at"
+    ],
     "NOTICE_RECEIVED": [
-      "lot_no",
-      "notice_version"
+      "notice_no",
+      "kind",
+      "notice_version",
+      "issued_at",
+      "summary"
+    ]
+  },
+  "payload_enums": {
+    "method": [
+      "AMBIENT",
+      "REFRIGERATED",
+      "FROZEN",
+      "DEEP_FROZEN",
+      "REFROZEN_WITH_RULES"
+    ],
+    "via": [
+      "FREEZE_FROM_AMBIENT",
+      "FREEZE_FROM_REFRIGERATED",
+      "REFREEZE_AFTER_THAW",
+      "THAW_IN_FRIDGE",
+      "THAW_AMBIENT",
+      "THAW_MICROWAVE"
+    ],
+    "kind": [
+      "GUIDE_REVISION",
+      "RECALL"
+    ]
+  },
+  "payload_required_by_notice_kind": {
+    "RECALL": [
+      "lot_no"
     ]
   },
   "additionalProperties": false
